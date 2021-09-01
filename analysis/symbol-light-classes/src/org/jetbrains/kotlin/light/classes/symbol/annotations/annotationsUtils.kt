@@ -14,8 +14,6 @@ import org.jetbrains.kotlin.descriptors.DeprecationLevelValue
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.idea.frontend.api.symbols.KtFileSymbol
 import org.jetbrains.kotlin.idea.frontend.api.symbols.markers.KtAnnotatedSymbol
-import org.jetbrains.kotlin.idea.frontend.api.symbols.markers.KtSimpleConstantValue
-import org.jetbrains.kotlin.name.StandardClassIds
 
 internal fun KtAnnotatedSymbol.hasJvmSyntheticAnnotation(annotationUseSiteTarget: AnnotationUseSiteTarget? = null): Boolean =
     hasAnnotation("kotlin/jvm/JvmSynthetic", annotationUseSiteTarget)
@@ -23,15 +21,12 @@ internal fun KtAnnotatedSymbol.hasJvmSyntheticAnnotation(annotationUseSiteTarget
 internal fun KtFileSymbol.hasJvmMultifileClassAnnotation(): Boolean =
     hasAnnotation("kotlin/jvm/JvmMultifileClass", AnnotationUseSiteTarget.FILE)
 
-internal fun KtAnnotatedSymbol.getJvmNameFromAnnotation(annotationUseSiteTarget: AnnotationUseSiteTarget? = null): String? {
-    val annotation = annotations.firstOrNull {
-        val siteTarget = it.useSiteTarget
-        (siteTarget == null || siteTarget == annotationUseSiteTarget) &&
-                it.classId?.asString() == "kotlin/jvm/JvmName"
-    }
-
-    return annotation?.let {
-        (it.arguments.firstOrNull()?.expression as? KtSimpleConstantValue<*>)?.value as? String
+internal fun KtAnnotatedSymbol.getJvmNameFromAnnotation(
+    project: Project,
+    annotationUseSiteTarget: AnnotationUseSiteTarget? = null
+): String? {
+    return project.analyzeWithSymbolAsContext(this) {
+        getJvmNameByAnnotation(annotationUseSiteTarget)
     }
 }
 

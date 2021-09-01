@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.descriptors.Deprecation
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.fir.declarations.getDeprecationForCallSite
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
-import org.jetbrains.kotlin.idea.asJava.getJvmNameFromAnnotation
 import org.jetbrains.kotlin.idea.frontend.api.components.KtSymbolInfoProvider
 import org.jetbrains.kotlin.idea.frontend.api.fir.KtFirAnalysisSession
 import org.jetbrains.kotlin.idea.frontend.api.fir.symbols.KtFirBackingFieldSymbol
@@ -69,7 +68,9 @@ internal class KtFirSymbolInfoProvider(
         if (symbol is KtFirSyntheticJavaPropertySymbol) {
             return symbol.firRef.withFir { it.getter.delegate.name }
         }
-        val jvmName = symbol.getJvmNameFromAnnotation(AnnotationUseSiteTarget.PROPERTY_GETTER)
+        val jvmName = with(analysisSession) {
+            symbol.getJvmNameByAnnotation(AnnotationUseSiteTarget.PROPERTY_GETTER)
+        }
         return Name.identifier(jvmName ?: JvmAbi.getterName(symbol.name.identifier))
     }
 
@@ -80,7 +81,9 @@ internal class KtFirSymbolInfoProvider(
         }
         return if (symbol.isVal) null
         else {
-            val jvmName = symbol.getJvmNameFromAnnotation(AnnotationUseSiteTarget.PROPERTY_SETTER)
+            val jvmName = with(analysisSession) {
+                symbol.getJvmNameByAnnotation(AnnotationUseSiteTarget.PROPERTY_SETTER)
+            }
             Name.identifier(jvmName ?: JvmAbi.setterName(symbol.name.identifier))
         }
     }
