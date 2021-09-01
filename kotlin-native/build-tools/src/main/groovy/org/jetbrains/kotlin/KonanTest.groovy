@@ -458,7 +458,8 @@ fun runTest() {
             if (settings.contains('-ProperIeee754Comparisons') ||  // K/N supports only proper IEEE754 comparisons
                     settings.contains('-ReleaseCoroutines') ||     // only release coroutines
                     settings.contains('-DataClassInheritance') ||  // old behavior is not supported
-                    settings.contains('-ProhibitAssigningSingleElementsToVarargsInNamedForm')) { // Prohibit these assignments
+                    settings.contains('-ProhibitAssigningSingleElementsToVarargsInNamedForm') ||  // Prohibit these assignments
+                    settings.contains('-ProhibitDataClassesOverridingCopy')) {  // Prohibit as no longer supported
                 return false
             }
         }
