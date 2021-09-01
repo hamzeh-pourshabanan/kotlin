@@ -4,5 +4,5 @@
  */
 
 fun main() {
-    print(readlnOrNull())
+    print(readln())
 }

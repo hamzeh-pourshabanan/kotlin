@@ -757,6 +757,12 @@ standaloneTest("readln_long_line") {
     source = "runtime/basic/readln_long_line.kt"
 }
 
+standaloneTest("readln_cyrillic") {
+    useGoldenData = true
+    useTestData = true
+    source = "runtime/basic/readln_cyrillic.kt"
+}
+
 task hello3(type: KonanLocalTest) {
     useGoldenData = true
     source = "runtime/basic/hello3.kt"
