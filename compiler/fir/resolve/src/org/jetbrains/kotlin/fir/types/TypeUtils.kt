@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousObject
-import org.jetbrains.kotlin.fir.diagnostics.ConeSimpleDiagnostic
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.resolve.substitution.substitutorByMap
 import org.jetbrains.kotlin.fir.resolve.toSymbol
@@ -354,9 +353,8 @@ private fun FirTypeRef.hideLocalTypeIfNeeded(
             return this
         }
         if (firClass.superTypeRefs.size > 1) {
-            return buildErrorTypeRef {
-                diagnostic = ConeSimpleDiagnostic("Cannot hide local type ${firClass.render()}")
-            }
+            // NB: don't approximate so members can be resolved. The error is reported by FirAmbiguousAnonymousTypeChecker
+            return this
         }
         val superType = firClass.superTypeRefs.single()
         if (superType is FirResolvedTypeRef) {
