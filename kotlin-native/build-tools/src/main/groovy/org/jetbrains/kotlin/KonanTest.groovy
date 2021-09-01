@@ -459,7 +459,9 @@ fun runTest() {
                     settings.contains('-ReleaseCoroutines') ||     // only release coroutines
                     settings.contains('-DataClassInheritance') ||  // old behavior is not supported
                     settings.contains('-ProhibitAssigningSingleElementsToVarargsInNamedForm') ||  // Prohibit these assignments
-                    settings.contains('-ProhibitDataClassesOverridingCopy')) {  // Prohibit as no longer supported
+                    settings.contains('-ProhibitDataClassesOverridingCopy') ||  // Prohibit as no longer supported
+                    settings.contains('-ProhibitOperatorMod') ||  // Prohibit as no longer supported
+                    settings.contains('-UseBuilderInferenceOnlyIfNeeded')) {  // Run only default one
                 return false
             }
         }
