@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <cstdio>
+
 #include "KAssert.h"
 #include "Memory.h"
 #include "Natives.h"
@@ -65,6 +67,35 @@ OBJ_GETTER0(Kotlin_io_Console_readLine) {
         RETURN_OBJ(nullptr);
     }
     RETURN_RESULT_OF(CreateStringFromCString, data);
+}
+
+OBJ_GETTER0(Kotlin_io_Console_readlnOrNull) {
+    KStdVector<char> data;
+    data.reserve(16);
+    bool isEOF = false;
+    {
+        kotlin::ThreadStateGuard guard(kotlin::ThreadState::kNative);
+        while (true) {
+            int result = fgetc(stdin);
+
+            if (result == EOF || result == '\n') {
+                isEOF = (result == EOF);
+                break;
+            }
+
+            data.push_back(result);
+        }
+        if (ferror(stdin) != 0) {
+            ThrowIllegalStateException();
+        }
+    }
+    if (!data.empty() && data.back() == '\r') {
+        data.pop_back();
+    }
+    if (data.empty() && isEOF) {
+        RETURN_OBJ(nullptr);
+    }
+    RETURN_RESULT_OF(StringFromUtf8Buffer, data.data(), data.size());
 }
 
 } // extern "C"
